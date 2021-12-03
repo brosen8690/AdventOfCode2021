@@ -45,3 +45,31 @@ int epsilon = Convert.ToInt32(epsilonBits, 2);
 Console.WriteLine("Part 1: " + epsilon * gamma);
 
 //Part 2
+
+//Get the oxygen generator rating
+var filteredRows = rows.ToList();
+int oxyRating = 0;
+for (int i = 0; i < rows.First().Length; i++)
+{
+    filteredRows = filteredRows.Where(x => x[i] == (filteredRows.Average(x => int.Parse(x[i].ToString())) >= .5 ? '1' : '0')).ToList();
+    if (filteredRows.Count == 1)
+    {
+        oxyRating = Convert.ToInt32(filteredRows.First(), 2);
+        break;
+    }
+}
+
+//Get the co2 scrubber rating
+filteredRows = rows.ToList();
+int co2Rating = 0;
+for (int i = 0; i < rows.First().Length; i++)
+{
+    filteredRows = filteredRows.Where(x => x[i] == (filteredRows.Average(x => int.Parse(x[i].ToString())) >= .5 ? '0' : '1')).ToList();
+    if (filteredRows.Count == 1)
+    {
+        co2Rating = Convert.ToInt32(filteredRows.First(), 2);
+        break;
+    }
+}
+
+Console.WriteLine("Part 2: " + oxyRating * co2Rating);
