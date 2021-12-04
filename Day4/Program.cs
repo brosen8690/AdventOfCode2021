@@ -7,8 +7,9 @@ var squares = input
     .Select(y =>
     {
         return new Square(y.ToList());
-    });
+    }).ToList();
 
+//Part 1
 int score = -1;
 List<int> calledNumbers = new List<int>();
 foreach (var number in numbers)
@@ -16,14 +17,14 @@ foreach (var number in numbers)
     calledNumbers.Add(number);
     foreach (var square in squares)
     {
-        score = square.CalcualteWinner(calledNumbers);
-        if (score >= 0)
+        score = square.CalculateWinner(calledNumbers);
+        if (score > -1)
         {
             break;
         }
     }
 
-    if (score >= 0)
+    if (score > -1)
     {
         break;
     }
@@ -31,8 +32,35 @@ foreach (var number in numbers)
 
 Console.WriteLine("Part 1: " + score);
 
+//Part 2
+
+//Reset HasWon properties from part 1
+squares = squares.Select(x =>
+{
+    x.HasWon = false;
+    return x;
+}).ToList();
+
+calledNumbers = new List<int>();
+List<int> scores = new List<int>();
+foreach (var number in numbers)
+{
+    calledNumbers.Add(number);
+    for (int i = 0; i < squares.Count(); i++)
+    {
+        score = squares.ElementAt(i).CalculateWinner(calledNumbers);
+        if (score > -1)
+        {
+            scores.Add(score);
+        }
+    }
+}
+
+Console.WriteLine("Part 2: " + scores.Last());
+
 class Square
 {
+    public bool HasWon { get; set; }
     public IEnumerable<IEnumerable<int>> Rows { get; set; }
     public IEnumerable<IEnumerable<int>> Columns
     {
@@ -59,10 +87,11 @@ class Square
     }
 
     //Determines whether this square is a winner and if so, returns the score
-    public int CalcualteWinner(List<int> calledNumbers)
+    public int CalculateWinner(IEnumerable<int> calledNumbers)
     {
-        if (IsWinner(calledNumbers))
+        if (IsWinner(calledNumbers) && !HasWon)
         {
+            HasWon = true;
             return CalculateScore(calledNumbers);
         }
 
@@ -70,7 +99,7 @@ class Square
     }
 
     //Determines whether this square is a winner, based on the called numbers
-    private bool IsWinner(List<int> calledNumbers)
+    private bool IsWinner(IEnumerable<int> calledNumbers)
     {
         foreach (var row in Rows)
         {
@@ -92,7 +121,7 @@ class Square
     }
 
     //Calculates the score of this board
-    private int CalculateScore(List<int> calledNumbers)
+    private int CalculateScore(IEnumerable<int> calledNumbers)
     {
         int sum = 0;
         foreach (var row in Rows)
